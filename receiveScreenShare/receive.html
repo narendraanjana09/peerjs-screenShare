@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>Receive</title>
-    <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
@@ -32,29 +31,14 @@
             autofocus="true"
           />
           <button type="button" id="sendButton">Send</button>
-          <button type="button" id="clearMsgsButton">Clear Msgs (Local)</button>
         </td>
       </tr>
       <tr>
         <td>
           <div id="status" class="status"></div>
         </td>
-        <td>
-          <div class="message" id="message"></div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <button type="button" class="control-button" id="resetButton">
-            Reset
-          </button>
-        </td>
-        <td>
-          <button type="button" class="control-button" id="goButton">Go</button>
-        </td>
       </tr>
     </table>
-    <audio id="audioItem"></audio>
     <video
       id="screenShareVideo"
       style="max-width: 100%; max-height: 100%"
@@ -62,6 +46,6 @@
     ></video>
 
     <script src="https://unpkg.com/peerjs@1.5.0/dist/peerjs.min.js"></script>
-    <script src="receive.js"></script>
+    <script src="screenReceive.js"></script>
   </body>
 </html>

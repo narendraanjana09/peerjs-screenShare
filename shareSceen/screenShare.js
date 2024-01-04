@@ -6,18 +6,14 @@
       var conn = null;
       var recvId = document.getElementById("receiver-id");
       var status = document.getElementById("status");
-      var message = document.getElementById("message");
       var sendMessageBox = document.getElementById("sendMessageBox");
       var sendButton = document.getElementById("sendButton");
-      var clearMsgsButton = document.getElementById("clearMsgsButton");
-    
+
       var screenStream;
       var destPeerID;
     
       function initialize() {
-        peer = new Peer(null, {
-          debug: 2,
-        });
+        peer = new Peer();
     
         peer.on("open", function (id) {
           // Workaround for peer.reconnect deleting previous id
@@ -56,7 +52,34 @@
           console.log("Connected to: " + conn.peer);
     
           status.innerHTML = "Connected";
+
+          conn.on("data", function (data) {
+            console.log("data: " + data)
+          });
         });
+
+
+
+        peer.on("disconnected", function () {
+            status.innerHTML = "Connection lost. Please reconnect";
+            console.log("Connection lost. Please reconnect");
+      
+            peer.id = lastPeerId;
+            peer._lastServerId = lastPeerId;
+            peer.reconnect();
+          });
+      
+          peer.on("close", function () {
+            conn = null;
+            status.innerHTML = "Connection destroyed. Please refresh";
+            console.log("Connection destroyed");
+          });
+      
+          peer.on("error", function (err) {
+            console.log(err);
+            alert("" + err);
+          });
+
       }
     
       function startScreenShare() {
@@ -65,27 +88,17 @@
             .getDisplayMedia({ video: true })
             .then(function (stream) {
               screenStream = stream;
-
               screenStream.getVideoTracks()[0].addEventListener('ended', function () {
                   console.log('Screen sharing stopped');
                 });
       
               var call = peer.call(destPeerID, screenStream);
               peer.on("call", function (call) {
-                console.log("starting stream");
+                console.log("starting screen share stream");
                 call.answer(screenStream);
-
-                call.on("stream", async (audioStream) => {
-                  console.log(
-                    'audio stream received'
-                  );
-                });
-
               });
-      
-              console.log("sharing stream");
+              console.log("sharing screen share streaming");
               displayScreenShare(screenStream);
-
             })
             .catch(function (error) {
               console.error("Error accessing screen: ", error);
@@ -98,56 +111,22 @@
       function stopScreenSharing() {
             if (screenStream) {
               const tracks = screenStream.getTracks();
-          
               tracks.forEach(track => {
-                track.stop(); // Stop each track in the stream
+                track.stop();
               });
-          
-              // Perform any additional cleanup if needed
               screenStream = null;
               console.log('Screen sharing stopped');
             }
           }
     
       function displayScreenShare(stream) {
-        var videoElement = document.createElement("video");
+        var videoElement = document.getElementById("videoItem");
         videoElement.srcObject = stream;
         videoElement.controls = false;
         videoElement.setAttribute("autoplay", "true");
-        document.body.appendChild(videoElement);
       }
     
-      function addMessage(msg) {
-        var now = new Date();
-        var h = now.getHours();
-        var m = addZero(now.getMinutes());
-        var s = addZero(now.getSeconds());
-    
-        if (h > 12) h -= 12;
-        else if (h === 0) h = 12;
-    
-        function addZero(t) {
-          if (t < 10) t = "0" + t;
-          return t;
-        }
-    
-        message.innerHTML =
-          '<br><span class="msg-time">' +
-          h +
-          ":" +
-          m +
-          ":" +
-          s +
-          "</span>  -  " +
-          msg +
-          message.innerHTML;
-      }
-    
-      function clearMessages() {
-        message.innerHTML = "";
-        addMessage("Msgs cleared");
-      }
-    
+     
       sendMessageBox.addEventListener("keypress", function (e) {
         var event = e || window.event;
         var char = event.which || event.keyCode;
@@ -160,13 +139,11 @@
           sendMessageBox.value = "";
           conn.send(msg);
           console.log("Sent: " + msg);
-          addMessage('<span class="selfMsg">Self: </span>' + msg);
         } else {
           console.log("Connection is closed");
         }
       });
     
-      clearMsgsButton.addEventListener("click", clearMessages);
     
       initialize();
     })();

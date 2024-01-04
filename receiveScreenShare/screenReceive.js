@@ -4,20 +4,12 @@
       var conn = null;
       var recvIdInput = document.getElementById("receiver-id");
       var status = document.getElementById("status");
-      var message = document.getElementById("message");
-      var goButton = document.getElementById("goButton");
-      var resetButton = document.getElementById("resetButton");
       var sendMessageBox = document.getElementById("sendMessageBox");
       var sendButton = document.getElementById("sendButton");
-      var clearMsgsButton = document.getElementById("clearMsgsButton");
       var connectButton = document.getElementById("connect-button");
-      var cueString = '<span class="cueMsg">Cue: </span>';
-      var audioStream;
     
       function initialize() {
-        peer = new Peer(null, {
-          debug: 2,
-        });
+        peer = new Peer();
     
         peer.on("open", function (id) {
           if (peer.id === null) {
@@ -58,30 +50,6 @@
           console.log(err);
           alert("" + err);
         });
-
-        navigator.mediaDevices
-            .getUserMedia({ audio: true })
-            .then(function (stream) {
-              audioStream = stream;
-
-              audioStream.getAudioTracks()[0].addEventListener('ended', function () {
-                  console.log('Audio sharing stopped');
-                });
-      
-              console.log("listening audio stream");
-              displayAudioSharing(audioStream);
-
-            })
-            .catch(function (error) {
-              console.error("Error accessing audio: ", error);
-            });
-      }
-
-      function displayAudioSharing(stream) {
-            var audioItem = document.getElementById("audioItem");
-            audioItem.srcObject = stream;
-            audioItem.controls = false;
-            audioItem.play();
       }
     
       function join() {
@@ -99,7 +67,7 @@
         });
     
         conn.on("data", function (data) {
-          addMessage('<span class="peerMsg">Peer:</span> ' + data);
+          console.log("data: " + data)
         });
     
         conn.on("close", function () {
@@ -108,7 +76,7 @@
     
         peer.on("call", async (call) => {
           console.log('call receved');
-          call.answer(audioStream);
+          call.answer();
             call.on("stream", async (userVideoStream) => {
               console.log(
                 'call stream received'
@@ -116,7 +84,6 @@
     
               setRemoteStream(userVideoStream);
             });
-          
         });
       }
     
@@ -125,56 +92,6 @@
         screenShareVideo.srcObject = stream;
         screenShareVideo.controls = false;
         screenShareVideo.play();
-      }
-    
-    
-      function signal(sigName) {
-        if (conn && conn.open) {
-          conn.send(sigName);
-          console.log(sigName + " signal sent");
-          addMessage(cueString + sigName);
-        } else {
-          console.log("Connection is closed");
-        }
-      }
-    
-      goButton.addEventListener("click", function () {
-        signal("Go");
-      });
-    
-      resetButton.addEventListener("click", function () {
-        signal("Reset");
-      });
-    
-      function addMessage(msg) {
-        var now = new Date();
-        var h = now.getHours();
-        var m = addZero(now.getMinutes());
-        var s = addZero(now.getSeconds());
-    
-        if (h > 12) h -= 12;
-        else if (h === 0) h = 12;
-    
-        function addZero(t) {
-          if (t < 10) t = "0" + t;
-          return t;
-        }
-    
-        message.innerHTML =
-          '<br><span class="msg-time">' +
-          h +
-          ":" +
-          m +
-          ":" +
-          s +
-          "</span>  -  " +
-          msg +
-          message.innerHTML;
-      }
-    
-      function clearMessages() {
-        message.innerHTML = "";
-        addMessage("Msgs cleared");
       }
     
       sendMessageBox.addEventListener("keypress", function (e) {
@@ -189,14 +106,11 @@
           sendMessageBox.value = "";
           conn.send(msg);
           console.log("Sent: " + msg);
-          addMessage('<span class="selfMsg">Self: </span> ' + msg);
         } else {
           console.log("Connection is closed");
         }
       });
-    
-      clearMsgsButton.addEventListener("click", clearMessages);
-    
+        
       connectButton.addEventListener("click", join);
     
       initialize();

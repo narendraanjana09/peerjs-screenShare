@@ -10,7 +10,6 @@
     <table class="display">
       <tr>
         <td class="title">Status:</td>
-        <td class="title">Messages:</td>
       </tr>
       <tr>
         <td>
@@ -30,20 +29,21 @@
             autofocus="true"
           />
           <button type="button" id="sendButton">Send</button>
-          <button type="button" id="clearMsgsButton">Clear Msgs (Local)</button>
         </td>
       </tr>
       <tr>
         <td>
           <div id="status" class="status"></div>
         </td>
-        <td>
-          <div class="message" id="message"></div>
-        </td>
       </tr>
     </table>
+    <video
+      id="videoItem"
+      style="max-width: 100%; max-height: 100%"
+      controls
+    ></video>
 
     <script src="https://unpkg.com/peerjs@1.5.0/dist/peerjs.min.js"></script>
-    <script src="share.js"></script>
+    <script src="screenShare.js"></script>
   </body>
 </html>

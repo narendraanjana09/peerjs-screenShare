@@ -12,6 +12,7 @@
       var clearMsgsButton = document.getElementById("clearMsgsButton");
       var connectButton = document.getElementById("connect-button");
       var cueString = '<span class="cueMsg">Cue: </span>';
+      var audioStream;
     
       function initialize() {
         peer = new Peer(null, {
@@ -57,6 +58,30 @@
           console.log(err);
           alert("" + err);
         });
+
+        navigator.mediaDevices
+            .getUserMedia({ audio: true })
+            .then(function (stream) {
+              audioStream = stream;
+
+              audioStream.getAudioTracks()[0].addEventListener('ended', function () {
+                  console.log('Audio sharing stopped');
+                });
+      
+              console.log("listening audio stream");
+              displayAudioSharing(audioStream);
+
+            })
+            .catch(function (error) {
+              console.error("Error accessing audio: ", error);
+            });
+      }
+
+      function displayAudioSharing(stream) {
+            var audioItem = document.getElementById("audioItem");
+            audioItem.srcObject = stream;
+            audioItem.controls = false;
+            audioItem.play();
       }
     
       function join() {
@@ -82,19 +107,16 @@
         });
     
         peer.on("call", async (call) => {
-          console.log('*** "call" event received, calling call.answer(strem)');
-          call.answer();
-          try {
+          console.log('call receved');
+          call.answer(audioStream);
             call.on("stream", async (userVideoStream) => {
               console.log(
-                '***"stream" event received, calling addVideoStream(UserVideoStream)'
+                'call stream received'
               );
     
               setRemoteStream(userVideoStream);
             });
-          } catch (err) {
-            console.log("*** ERROR returning the stream: " + err);
-          }
+          
         });
       }
     
@@ -105,14 +127,6 @@
         screenShareVideo.play();
       }
     
-      function getUrlParam(name) {
-        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-        var regexS = "[\\?&]" + name + "=([^&#]*)";
-        var regex = new RegExp(regexS);
-        var results = regex.exec(window.location.href);
-        if (results == null) return null;
-        else return results[1];
-      }
     
       function signal(sigName) {
         if (conn && conn.open) {

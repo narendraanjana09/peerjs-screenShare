@@ -60,25 +60,54 @@
       }
     
       function startScreenShare() {
-        navigator.mediaDevices
-          .getDisplayMedia({ video: true })
-          .then(function (stream) {
-            screenStream = stream;
-    
-            var call = peer.call(destPeerID, screenStream);
-            peer.on("call", function (call) {
-              console.log("starting stream");
-              call.answer(screenStream);
+        try {
+            navigator.mediaDevices
+            .getDisplayMedia({ video: true })
+            .then(function (stream) {
+              screenStream = stream;
+
+              screenStream.getVideoTracks()[0].addEventListener('ended', function () {
+                  console.log('Screen sharing stopped');
+                });
+      
+              var call = peer.call(destPeerID, screenStream);
+              peer.on("call", function (call) {
+                console.log("starting stream");
+                call.answer(screenStream);
+
+                call.on("stream", async (audioStream) => {
+                  console.log(
+                    'audio stream received'
+                  );
+                });
+
+              });
+      
+              console.log("sharing stream");
+              displayScreenShare(screenStream);
+
+            })
+            .catch(function (error) {
+              console.error("Error accessing screen: ", error);
             });
-    
-            console.log("sharing stream");
-    
-            displayScreenShare(stream);
-          })
-          .catch(function (error) {
-            console.error("Error accessing screen: ", error);
-          });
+        }catch(exeption) {
+            console.error("Error from screen share",exeption)
+        }
       }
+
+      function stopScreenSharing() {
+            if (screenStream) {
+              const tracks = screenStream.getTracks();
+          
+              tracks.forEach(track => {
+                track.stop(); // Stop each track in the stream
+              });
+          
+              // Perform any additional cleanup if needed
+              screenStream = null;
+              console.log('Screen sharing stopped');
+            }
+          }
     
       function displayScreenShare(stream) {
         var videoElement = document.createElement("video");

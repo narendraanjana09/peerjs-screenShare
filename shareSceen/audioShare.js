@@ -91,12 +91,15 @@
             });
   
           var call = peer.call(destPeerID, audioStream);
-          peer.on("call", function (call) {
-            console.log("starting audio share stream");
-            call.answer(audioStream);
+
+          call.on("stream", async (userAudioStream) => {
+            console.log(
+              'Audio call stream received'
+            );
+  
+            displayAudioShare(userAudioStream);
           });
           console.log("sharing audio share streaming");
-          displayAudioShare(audioStream);
         })
         .catch(function (error) {
           console.error("Error accessing audio: ", error);
@@ -123,6 +126,8 @@
     audioElement.controls = false;
     audioElement.setAttribute("autoplay", "true");
   }
+
+  
 
   initialize();
 })();

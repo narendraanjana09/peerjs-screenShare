@@ -6,6 +6,8 @@
       var status = document.getElementById("status");
       var connectButton = document.getElementById("connect-button-audio");
     
+      var audioStream;
+
       function initialize() {
         peer = new Peer();
     
@@ -73,26 +75,51 @@
         });
     
         peer.on("call", async (call) => {
-          console.log('call receved');
-          call.answer();
-            call.on("stream", async (userAudioStream) => {
-              console.log(
-                'Audio call stream received'
-              );
-    
-              setRemoteStream(userAudioStream);
+          console.log('Audio call receved');
+          navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then(function (stream) {
+          audioStream = stream;
+          audioStream.getAudioTracks()[0].addEventListener('ended', function () {
+              console.log('audio sharing stopped');
             });
+  
+            call.answer(audioStream); // Answer the call with an A/V stream.
+    call.on('stream', function(remoteStream) {
+      console.log(
+        'Audio call stream received'
+      );
+
+      setRemoteAudioStream(remoteStream);
+    });
+        })
+        .catch(function (error) {
+          console.error("Error accessing audio: ", error);
+        });
         });
       }
     
-      function setRemoteStream(stream) {
+      function setRemoteAudioStream(stream) {
         var audioItem = document.getElementById("audioItem");
         audioItem.srcObject = stream;
         audioItem.controls = false;
         audioItem.play();
       }
-       
+      
+      function stopAudioSharing() {
+        if (audioStream) {
+          const tracks = audioStream.getTracks();
+          tracks.forEach(track => {
+            track.stop();
+          });
+          audioStream = null;
+          console.log('audio sharing stopped');
+        }
+      }
+
       connectButton.addEventListener("click", join);
+
+      
     
       initialize();
     })();

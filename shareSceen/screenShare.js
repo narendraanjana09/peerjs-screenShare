@@ -124,6 +124,13 @@
         videoElement.srcObject = stream;
         videoElement.controls = false;
         videoElement.setAttribute("autoplay", "true");
+
+        var stopAudioShareButton = document.createElement("button");
+    stopAudioShareButton.innerHTML = "Stop Screen Share";
+    stopAudioShareButton.addEventListener("click", function () {
+        stopScreenSharing();
+    });
+    document.body.appendChild(stopAudioShareButton);
       }
     
      
@@ -144,6 +151,7 @@
         }
       });
     
+      
     
       initialize();
     })();

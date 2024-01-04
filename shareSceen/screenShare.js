@@ -15,7 +15,7 @@
       function initialize() {
         peer = new Peer();
     
-        peer.on("open", function (id) {
+        peer.on("open",async function (id) {
           // Workaround for peer.reconnect deleting previous id
           if (peer.id === null) {
             console.log("Received null id from peer open");
@@ -24,22 +24,22 @@
             lastPeerId = peer.id;
           }
     
-          console.log("ID: " + peer.id);
-          recvId.innerHTML = "ID: " + peer.id;
-          status.innerHTML = "Awaiting connection...";
+          console.log("Screen Share ID: " + peer.id);
+          recvId.innerHTML += "<br>Screen Share ID: " + peer.id;
+          status.innerHTML += "<br>Screen Share Awaiting connection...";
     
           var screenShareButton = document.createElement("button");
-          screenShareButton.innerHTML = "Share Screen";
+          screenShareButton.innerHTML += "<br>Share Screen";
           screenShareButton.addEventListener("click", function () {
             startScreenShare();
           });
           document.body.appendChild(screenShareButton);
         });
     
-        peer.on("connection", function (c) {
+        peer.on("connection", async function (c) {
           if (conn && conn.open) {
             c.on("open", function () {
-              c.send("Already connected to another client");
+              c.send("Screen Share Already connected to another client");
               setTimeout(function () {
                 c.close();
               }, 500);
@@ -49,9 +49,9 @@
     
           conn = c;
           destPeerID = conn.peer;
-          console.log("Connected to: " + conn.peer);
+          console.log("Screen Share Connected to: " + conn.peer);
     
-          status.innerHTML = "Connected";
+          status.innerHTML += "<br>Screen Share Connected";
 
           conn.on("data", function (data) {
             console.log("data: " + data)
@@ -60,19 +60,19 @@
 
 
 
-        peer.on("disconnected", function () {
-            status.innerHTML = "Connection lost. Please reconnect";
-            console.log("Connection lost. Please reconnect");
+        peer.on("disconnected",async function () {
+            status.innerHTML += "<br>Screen Share Connection lost. Please reconnect";
+            console.log("Screen Share Connection lost. Please reconnect");
       
             peer.id = lastPeerId;
             peer._lastServerId = lastPeerId;
             peer.reconnect();
           });
       
-          peer.on("close", function () {
+          peer.on("close",async function () {
             conn = null;
-            status.innerHTML = "Connection destroyed. Please refresh";
-            console.log("Connection destroyed");
+            status.innerHTML += "<br>Screen Share Connection destroyed. Please refresh";
+            console.log("Screen Share Connection destroyed");
           });
       
           peer.on("error", function (err) {
@@ -140,7 +140,7 @@
           conn.send(msg);
           console.log("Sent: " + msg);
         } else {
-          console.log("Connection is closed");
+          console.log("Screen Share Connection is closed");
         }
       });
     

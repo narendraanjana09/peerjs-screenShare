@@ -23,7 +23,9 @@
           } else {
             lastPeerId = peer.id;
           }
-    
+          peerId = peer.id;
+          window.id1 = peerId;
+
           console.log("Screen Share ID: " + peer.id);
           recvId.innerHTML += "<br>Screen Share ID: " + peer.id;
           status.innerHTML += "<br>Screen Share Awaiting connection...";

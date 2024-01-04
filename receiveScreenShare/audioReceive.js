@@ -2,11 +2,11 @@
       var lastPeerId = null;
       var peer = null; 
       var conn = null;
-      var recvIdInput = document.getElementById("audio-receiver-id");
       var status = document.getElementById("status");
-      var connectButton = document.getElementById("connect-button-audio");
     
       var audioStream;
+      var destPeerID;
+
 
       function initialize() {
         peer = new Peer();
@@ -20,6 +20,12 @@
           }
     
           console.log("Audio ID: " + peer.id);
+
+          if(destPeerID){
+            join();
+          }else{
+            console.error("destPeerID is null or empty");
+          }
         });
     
         peer.on("connection", function (c) {
@@ -52,12 +58,12 @@
         });
       }
     
-      function join() {
+      async function join() {
         if (conn) {
           conn.close();
         }
     
-        conn = peer.connect(recvIdInput.value, {
+        conn = peer.connect(destPeerID, {
           reliable: true,
         });
     
@@ -117,10 +123,19 @@
         }
       }
 
-      connectButton.addEventListener("click", join);
 
-      
-    
+      function logQueryParameters() {
+  
+        const url = new URL(window.location.href);
+
+        destPeerID = url.searchParams.get('id2');
+       
+        console.log('destPeerID:', destPeerID);
+    }
+    window.addEventListener('load', logQueryParameters);
+
       initialize();
+
+    
     })();
     

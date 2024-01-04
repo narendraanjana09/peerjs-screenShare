@@ -15,15 +15,6 @@
       </tr>
       <tr>
         <td>
-          <span style="font-weight: bold">Screen Share ID: </span>
-          <input
-            type="text"
-            id="receiver-id"
-            title="Input the Screen Share ID"
-          />
-          <button id="connect-button-screen">Connect Screen Share</button>
-        </td>
-        <td>
           <input
             type="text"
             id="sendMessageBox"
@@ -35,15 +26,6 @@
       </tr>
       <tr>
         <td>
-          <span style="font-weight: bold">Audio ID: </span>
-          <input
-            type="text"
-            id="audio-receiver-id"
-            title="Input the Audio Share ID"
-          />
-          <button id="connect-button-audio">Connect Audio</button>
-        </td>
-        <td>
           <div id="status" class="status"></div>
         </td>
       </tr>
@@ -52,7 +34,8 @@
     <video
       id="screenShareVideo"
       style="max-width: 100%; max-height: 100%"
-      controls
+      autoplay="true"
+    muted="muted"
     ></video>
 
     <script src="https://unpkg.com/peerjs@1.5.0/dist/peerjs.min.js"></script>

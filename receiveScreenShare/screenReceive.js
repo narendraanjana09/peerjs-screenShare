@@ -2,11 +2,13 @@
       var lastPeerId = null;
       var peer = null; 
       var conn = null;
-      var recvIdInput = document.getElementById("receiver-id");
       var status = document.getElementById("status");
       var sendMessageBox = document.getElementById("sendMessageBox");
       var sendButton = document.getElementById("sendButton");
       var connectButton = document.getElementById("connect-button-screen");
+
+      var destPeerID;
+
     
       function initialize() {
         peer = new Peer();
@@ -20,6 +22,12 @@
           }
     
           console.log("Sceen Peer ID: " + peer.id);
+
+          if(destPeerID){
+            join();
+          }else{
+            console.error("destPeerID is null or empty");
+          }
         });
     
         peer.on("connection", function (c) {
@@ -52,12 +60,14 @@
         });
       }
     
-      function join() {
+
+
+      async function join() {
         if (conn) {
           conn.close();
         }
     
-        conn = peer.connect(recvIdInput.value, {
+        conn = peer.connect(destPeerID, {
           reliable: true,
         });
     
@@ -111,8 +121,17 @@
         }
       });
         
-      connectButton.addEventListener("click", join);
-    
+
+      function logQueryParameters() {
+  
+        const url = new URL(window.location.href);
+
+        destPeerID = url.searchParams.get('id1');
+        console.log('destPeerID:', destPeerID);
+    }
+
+    window.addEventListener('load', logQueryParameters);    
+
       initialize();
     })();
     

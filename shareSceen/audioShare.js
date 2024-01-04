@@ -21,7 +21,8 @@
       } else {
         lastPeerId = peer.id;
       }
-
+      peerId = peer.id;
+      window.id2 = peerId;
       console.log("audio Share ID: " + peer.id);
       recvId.innerHTML += "<br>Audio ID: " + peer.id;
       status.innerHTML += "<br>Audio Awaiting connection...";
@@ -80,6 +81,19 @@
 
   }
 
+  function copyLink(){
+    
+    if (window.id1 !== undefined && window.id2 !== undefined) {
+      var id1 = window.id1;
+      var id2 = window.id2;
+      var url = 'http://127.0.0.1:5500/receiveScreenShare/receive.html?id1=' + id1 + '&id2=' + id2;
+      navigator.clipboard.writeText(url);
+      console.log('URL copied to clipboard: ' + url);
+  } else {
+      alert('Please generate both id1 and id2 before copying the URL.');
+  }
+  }
+
   function startAudioShare() {
     try {
         navigator.mediaDevices
@@ -126,8 +140,7 @@
     audioElement.controls = false;
     audioElement.setAttribute("autoplay", "true");
   }
-
-  
+  document.getElementById("copyLinkBtn").addEventListener('click',copyLink);
 
   initialize();
 })();

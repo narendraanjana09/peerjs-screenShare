@@ -43,16 +43,19 @@
       console.log("Audio Connected to: " + conn.peer);
       document.getElementById("copyLinkBtn").style.display = "none";
       conn.on("data", function (data) {
-        console.log("data: " + data)
+        console.log("data: " + data);
       });
+      conn.on('close', function() { 
+        console.log("Closed: Audio Call");
+        stopAudioSharing();
+        window.location.href = '.';
+       });
+      
       startAudioShare();
     });
 
-
-
     peer.on("disconnected",async function () {
         console.log("Audio Connection lost. Please reconnect");
-  
         peer.id = lastPeerId;
         peer._lastServerId = lastPeerId;
         peer.reconnect();
@@ -60,12 +63,15 @@
   
       peer.on("close", function () {
         conn = null;
+        stopAudioSharing();
         console.log("Audio Connection destroyed");
+        window.location.href = '.';
       });
   
       peer.on("error", function (err) {
         console.log(err);
         alert("Audio " + err);
+        window.location.href = '.';
       });
 
   }
@@ -103,6 +109,16 @@
   
             displayAudioShare(userAudioStream);
           });
+
+          call.on('close',function () {
+            alert("Call Closed");
+          });
+
+          call.on('error',function (err) {
+            console.error("Call Closed",err);
+          });
+
+
           console.log("sharing audio share streaming");
         })
         .catch(function (error) {

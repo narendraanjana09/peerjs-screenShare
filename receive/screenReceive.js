@@ -75,6 +75,7 @@
     
         conn.on("close", function () {
           console.log("Closed");
+          alert("Call Ended");
         });
     
         peer.on("call", async (call) => {
@@ -107,6 +108,10 @@
         destPeerID = url.searchParams.get('id1');
         console.log('destPeerID:', destPeerID);
     }
+
+    window.addEventListener('beforeunload', function (e) {
+      conn.close();
+  });
 
     window.addEventListener('load', logQueryParameters);    
 

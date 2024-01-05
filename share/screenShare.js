@@ -35,6 +35,7 @@
             });
             return;
           }
+
     
           conn = c;
           destPeerID = conn.peer;
@@ -44,13 +45,19 @@
             console.log("data: " + data)
           });
           document.getElementById("shareScreenBtn").style.display = "block";
+
+          conn.on("close", function () {
+            console.log("Closed");
+            stopScreenSharing();
+          
+            console.log("Screen Share Connection destroyed");
+            });
         });
 
 
 
         peer.on("disconnected",async function () {
             console.log("Screen Share Connection lost. Please reconnect");
-      
             peer.id = lastPeerId;
             peer._lastServerId = lastPeerId;
             peer.reconnect();
@@ -58,6 +65,8 @@
       
           peer.on("close",async function () {
             conn = null;
+            stopScreenSharing();
+            window.location.href = '.';
             console.log("Screen Share Connection destroyed");
           });
       
@@ -67,6 +76,8 @@
           });
 
       }
+
+      
     
       function startScreenShare() {
         try {
@@ -79,6 +90,7 @@
                 });
       
               var call = peer.call(destPeerID, screenStream);
+
               peer.on("call", function (call) {
                 console.log("starting screen share stream");
                 call.answer(screenStream);

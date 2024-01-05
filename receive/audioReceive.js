@@ -75,6 +75,7 @@
     
         conn.on("close", function () {
           console.log("Closed");
+          stopAudioSharing();
                 });
     
         peer.on("call", async (call) => {
@@ -104,6 +105,9 @@
         });
       }
     
+
+      
+
       function setRemoteAudioStream(stream) {
         var audioItem = document.getElementById("audioItem");
         audioItem.srcObject = stream;
@@ -132,7 +136,9 @@
         console.log('destPeerID:', destPeerID);
     }
     window.addEventListener('load', logQueryParameters);
-
+    window.addEventListener('beforeunload', function (e) {
+      conn.close();
+  });
       initialize();
 
     

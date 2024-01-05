@@ -2,7 +2,6 @@
       var lastPeerId = null;
       var peer = null; 
       var conn = null;
-      var status = document.getElementById("status");
     
       var audioStream;
       var destPeerID;
@@ -35,10 +34,10 @@
               c.close();
             }, 500);
           });
+          document.getElementById("loading").style.display = "none";
         });
     
         peer.on("disconnected", function () {
-          status.innerHTML += "<br>Audio Audio Connection lost. Please reconnect";
           console.log("Audio Connection lost. Please reconnect");
     
           peer.id = lastPeerId;
@@ -48,7 +47,6 @@
     
         peer.on("close", function () {
           conn = null;
-          status.innerHTML += "<br>Audio Connection destroyed. Please refresh";
           console.log("Audio Connection destroyed");
         });
     
@@ -68,7 +66,6 @@
         });
     
         conn.on("open", function () {
-          status.innerHTML += "<br>Audio Connected to: " + conn.peer;
           console.log("Audio Connected to: " + conn.peer);
         });
     
@@ -77,11 +74,13 @@
         });
     
         conn.on("close", function () {
-          status.innerHTML += "<br>Audio Connection closed";
-        });
+          console.log("Closed");
+                });
     
         peer.on("call", async (call) => {
           console.log('Audio call receved');
+          document.getElementById("loading").style.display = "none";
+
           navigator.mediaDevices
         .getUserMedia({ audio: true })
         .then(function (stream) {

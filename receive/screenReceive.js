@@ -2,11 +2,7 @@
       var lastPeerId = null;
       var peer = null; 
       var conn = null;
-      var status = document.getElementById("status");
-      var sendMessageBox = document.getElementById("sendMessageBox");
-      var sendButton = document.getElementById("sendButton");
-      var connectButton = document.getElementById("connect-button-screen");
-
+     
       var destPeerID;
 
     
@@ -40,7 +36,6 @@
         });
     
         peer.on("disconnected", function () {
-          status.innerHTML += "<br>Screen  Screen  Connection lost. Please reconnect";
           console.log("Screen Connection lost. Please reconnect");
     
           peer.id = lastPeerId;
@@ -50,7 +45,6 @@
     
         peer.on("close", function () {
           conn = null;
-          status.innerHTML += "<br>Screen  Connection destroyed. Please refresh";
           console.log("Screen Connection destroyed");
         });
     
@@ -72,7 +66,6 @@
         });
     
         conn.on("open", function () {
-          status.innerHTML += "<br>Screen  Connected to: " + conn.peer;
           console.log("Screen Connected to: " + conn.peer);
         });
     
@@ -81,11 +74,12 @@
         });
     
         conn.on("close", function () {
-          status.innerHTML += "<br>Screen Connection closed";
+          console.log("Closed");
         });
     
         peer.on("call", async (call) => {
           console.log('call receved');
+          document.getElementById("loading").style.display = "none";
           call.answer();
             call.on("stream", async (userVideoStream) => {
               console.log(
@@ -98,29 +92,13 @@
       }
     
       function setRemoteStream(stream) {
-        var screenShareVideo = document.getElementById("screenShareVideo");
+        var screenShareVideo = document.getElementById("videoItem");
+        screenShareVideo.style.display = "block";
         screenShareVideo.srcObject = stream;
         screenShareVideo.controls = false;
         screenShareVideo.play();
       }
     
-      sendMessageBox.addEventListener("keypress", function (e) {
-        var event = e || window.event;
-        var char = event.which || event.keyCode;
-        if (char == "13") sendButton.click();
-      });
-    
-      sendButton.addEventListener("click", function () {
-        if (conn && conn.open) {
-          var msg = sendMessageBox.value;
-          sendMessageBox.value = "";
-          conn.send(msg);
-          console.log("Screen Sent: " + msg);
-        } else {
-          console.log("Screen Connection is closed");
-        }
-      });
-        
 
       function logQueryParameters() {
   

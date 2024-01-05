@@ -4,13 +4,12 @@
   var peer = null; 
   var peerId = null;
   var conn = null;
-  var recvId = document.getElementById("receiver-id");
-  var status = document.getElementById("status");
 
   var audioStream;
   var destPeerID;
 
   function initialize() {
+    document.getElementById("loading").style.display = "block";
     peer = new Peer();
 
     peer.on("open",async function (id) {
@@ -24,15 +23,8 @@
       peerId = peer.id;
       window.id2 = peerId;
       console.log("audio Share ID: " + peer.id);
-      recvId.innerHTML += "<br>Audio ID: " + peer.id;
-      status.innerHTML += "<br>Audio Awaiting connection...";
-
-      var audioShareButton = document.createElement("button");
-      audioShareButton.innerHTML += "<br>Share audio";
-      audioShareButton.addEventListener("click", function () {
-        startAudioShare();
-      });
-      document.body.appendChild(audioShareButton);
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("copyLinkBtn").style.display = "block";
     });
 
     peer.on("connection",async function (c) {
@@ -49,18 +41,16 @@
       conn = c;
       destPeerID = conn.peer;
       console.log("Audio Connected to: " + conn.peer);
-
-      status.innerHTML += "<br>Audio Connected";
-
+      document.getElementById("copyLinkBtn").style.display = "none";
       conn.on("data", function (data) {
         console.log("data: " + data)
       });
+      startAudioShare();
     });
 
 
 
     peer.on("disconnected",async function () {
-        status.innerHTML += "<br>Audio Connection lost. Please reconnect";
         console.log("Audio Connection lost. Please reconnect");
   
         peer.id = lastPeerId;
@@ -70,7 +60,6 @@
   
       peer.on("close", function () {
         conn = null;
-        status.innerHTML += "<br>Audio Connection destroyed. Please refresh";
         console.log("Audio Connection destroyed");
       });
   
@@ -86,7 +75,8 @@
     if (window.id1 !== undefined && window.id2 !== undefined) {
       var id1 = window.id1;
       var id2 = window.id2;
-      var url = 'http://127.0.0.1:5500/receiveScreenShare/receive.html?id1=' + id1 + '&id2=' + id2;
+      var baseUrl = window.location.origin;
+      var url = baseUrl + '/receive/?id1=' + id1 + '&id2=' + id2;
       navigator.clipboard.writeText(url);
       console.log('URL copied to clipboard: ' + url);
   } else {
@@ -136,6 +126,7 @@
 
   function displayAudioShare(stream) {
     var audioElement = document.getElementById("audioItem");
+    audioElement.style.display = "block";
     audioElement.srcObject = stream;
     audioElement.controls = false;
     audioElement.setAttribute("autoplay", "true");

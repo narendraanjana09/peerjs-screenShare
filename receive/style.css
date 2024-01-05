@@ -11,6 +11,16 @@ body {
       text-align: center;
     }
 
+    button {
+      display: none;
+      padding: 10px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
     #audioItem,
     #videoItem {
       display: none;

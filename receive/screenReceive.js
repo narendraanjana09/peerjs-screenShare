@@ -93,10 +93,16 @@
       }
     
       function setRemoteStream(stream) {
+        document.getElementById("startBtn").style.display = "block";
         var screenShareVideo = document.getElementById("videoItem");
-        screenShareVideo.style.display = "block";
         screenShareVideo.srcObject = stream;
         screenShareVideo.controls = false;
+      }
+
+      function startPlay() {
+        var screenShareVideo = document.getElementById("videoItem");
+        document.getElementById("startBtn").style.display = "none";
+        screenShareVideo.style.display = "block";
         screenShareVideo.play();
       }
     
@@ -112,7 +118,7 @@
     window.addEventListener('beforeunload', function (e) {
       conn.close();
   });
-
+  document.getElementById("startBtn").addEventListener('click', startPlay);
     window.addEventListener('load', logQueryParameters);    
 
       initialize();

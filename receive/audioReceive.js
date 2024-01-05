@@ -104,9 +104,6 @@
         });
         });
       }
-    
-
-      
 
       function setRemoteAudioStream(stream) {
         var audioItem = document.getElementById("audioItem");
